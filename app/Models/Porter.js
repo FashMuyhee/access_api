@@ -35,8 +35,9 @@ class Porter extends Model {
     return this.hasMany("App/Models/Token");
   }
 
+  //? hostel to porter
   hostel() {
-    return this.belongsTo("App/Models/Hostel");
+    return this.hasMany("App/Models/Hostel");
   }
 }
 

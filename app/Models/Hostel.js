@@ -4,8 +4,10 @@
 const Model = use("Model");
 
 class Hostel extends Model {
-  porters() {
-    return this.hasMany("App/Models/Porter");
+  
+  //?log to hostel
+  logs() {
+    return this.hasMany("App/Models/Log");
   }
 }
 
