@@ -30,17 +30,23 @@ module.exports = {
   porter: {
     serializer: "lucid",
     model: "App/Models/Porter",
-    scheme: "session",
+    scheme: "jwt",
     uid: "email",
     password: "password",
+    options: {
+      secret: Env.get("APP_KEY"),
+    },
   },
 
   admin: {
     serializer: "lucid",
     model: "App/Models/User",
-    scheme: "session",
+    scheme: "jwt",
     uid: "email",
     password: "password",
+    options: {
+      secret: Env.get("APP_KEY"),
+    },
   },
 
   /*
