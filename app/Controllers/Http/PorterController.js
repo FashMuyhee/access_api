@@ -23,40 +23,33 @@ class PorterController {
     });
   }
 
-  async store({ request, response }) {
+
+  // todo login in view route
+
+  //* porter login
+  async login({ auth, request, response }) {
     try {
-      const data = request.only(["email", "password", "hostel_id"]);
+      const { email, password } = request.all();
+      const porterAuth = await auth
+        .authenticator("porter")
+        .attempt(email, password);
       const rules = {
-        email: "required|email|unique:porters,email",
+        email: "required|email",
         password: "required",
-        hostel: "required",
       };
 
-      const validation = await validate(data, rules);
+      const validation = await validate({ email, password }, rules);
       if (validation.fails()) {
         return response
           .status(400)
           .send({ payload: { type: "error", error: validation.messages() } });
       }
 
-      await Porter.create(data);
-      return response.status(200).send({
-        payload: { type: "success", message: "Regristration Sucessfull" },
-      });
-    } catch (error) {
-      return response.status(error.status).send(error);
-    }
-  }
-
-  async login({ auth, request, response }) {
-    try {
-      const { email, password } = request.all();
-      const userAuth = await auth.attempt(email, password);
-
       return response
         .status(200)
-        .send({ payload: { type: "success", userAuth } });
+        .send({ payload: { type: "success", porterAuth } });
     } catch (error) {
+      console.log(error);
       return response
         .status(error.status)
         .send({ payload: { type: "error", error } });
@@ -65,23 +58,13 @@ class PorterController {
 
   async logout({ auth, response }) {
     // try {
-    const user = await auth.logout(auth.getUser());
+    const user = await auth.authenticator("porter").logout(auth.getUser());
     if (user) return response.json({ ee: "ww" });
     // return response.status(200).send({ message: "Logged Out" });
     // } catch (error) {
     //   return response.status(error.status).send(error);
     // }
   }
-
-  /**
-   * Create/save a new porter.
-   * POST porters
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store({ request, response }) {}
 
   /**
    * Display a single porter.

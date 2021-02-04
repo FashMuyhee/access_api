@@ -1,12 +1,11 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-/**
- * Resourceful controller for interacting with hostels
- */
+const Hostel = use("App/Models/Hostel");
+const { validate } = use("Validator");
 class HostelController {
   /**
    * Show a list of all hostels.
@@ -17,21 +16,14 @@ class HostelController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-const data;
+  async index({ request, response, view }) {
+    const hostels = await Hostel.all();
+    return response
+      .status(error.status)
+      .send({ payload: { type: "success", hostels } });
   }
+  
 
-  /**
-   * Render a form to be used for creating a new hostel.
-   * GET hostels/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
 
   /**
    * Create/save a new hostel.
@@ -41,7 +33,26 @@ const data;
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
+    try {
+      const data = request.only(["hostel"]);
+      const rules = {
+        hostel: "required",
+      };
+      const validation = await validate(data, rules);
+      if (validation.fails()) {
+        return response
+          .status(400)
+          .send({ payload: { type: "error", error: validation.messages() } });
+      }
+
+      await Hostel.create(data);
+      return response.status(200).send({
+        payload: { type: "success", message: "Hostel Created Successfully" },
+      });
+    } catch (error) {
+      return response.status(error.status).send(error);
+    }
   }
 
   /**
@@ -53,31 +64,17 @@ const data;
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, response, view }) {
+    try {
+      const hostel = await Hostel.findOrFail(params);
+      return response.status(200).send({
+        payload: { type: "success", data: hostel },
+      });
+    } catch (error) {
+      return response.status(error.status).send(error);
+    }
   }
 
-  /**
-   * Render a form to update an existing hostel.
-   * GET hostels/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update hostel details.
-   * PUT or PATCH hostels/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
 
   /**
    * Delete a hostel with id.
@@ -87,8 +84,7 @@ const data;
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = HostelController
+module.exports = HostelController;

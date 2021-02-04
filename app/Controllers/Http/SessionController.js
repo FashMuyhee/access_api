@@ -21,18 +21,6 @@ class SessionController {
   }
 
   /**
-   * Render a form to be used for creating a new session.
-   * GET sessions/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
-
-  /**
    * Create/save a new session.
    * POST sessions
    *
@@ -55,29 +43,7 @@ class SessionController {
   async show ({ params, request, response, view }) {
   }
 
-  /**
-   * Render a form to update an existing session.
-   * GET sessions/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update session details.
-   * PUT or PATCH sessions/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
-
+  
   /**
    * Delete a session with id.
    * DELETE sessions/:id

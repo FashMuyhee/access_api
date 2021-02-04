@@ -1,12 +1,11 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-/**
- * Resourceful controller for interacting with schools
- */
+const School = use("App/Models/School");
+const { validate } = use("Validator");
 class SchoolController {
   /**
    * Show a list of all schools.
@@ -17,7 +16,11 @@ class SchoolController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index({ request, response, view }) {
+    const levels = await School.all();
+    return response
+      .status(error.status)
+      .send({ payload: { type: "success", levels } });
   }
 
   /**
@@ -29,8 +32,7 @@ class SchoolController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
-  }
+  async create({ request, response, view }) {}
 
   /**
    * Create/save a new school.
@@ -40,7 +42,26 @@ class SchoolController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
+    try {
+      const data = request.only(["school"]);
+      const rules = {
+        school: "required",
+      };
+      const validation = await validate(data, rules);
+      if (validation.fails()) {
+        return response
+          .status(400)
+          .send({ payload: { type: "error", error: validation.messages() } });
+      }
+
+      await School.create(data);
+      return response.status(200).send({
+        payload: { type: "success", message: "school Created Successfully" },
+      });
+    } catch (error) {
+      return response.status(error.status).send(error);
+    }
   }
 
   /**
@@ -52,7 +73,15 @@ class SchoolController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
+    try {
+      const school = await School.findOrFail(params);
+      return response.status(200).send({
+        payload: { type: "success", data: school },
+      });
+    } catch (error) {
+      return response.status(error.status).send(error);
+    }
   }
 
   /**
@@ -64,8 +93,7 @@ class SchoolController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
-  }
+  async edit({ params, request, response, view }) {}
 
   /**
    * Update school details.
@@ -75,8 +103,7 @@ class SchoolController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
   /**
    * Delete a school with id.
@@ -86,8 +113,7 @@ class SchoolController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = SchoolController
+module.exports = SchoolController;

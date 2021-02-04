@@ -1,12 +1,11 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-/**
- * Resourceful controller for interacting with students
- */
+const Student = use("App/Models/Student");
+const AccessLog = use("App/Models/Log");
 class StudentController {
   /**
    * Show a list of all students.
@@ -17,30 +16,11 @@ class StudentController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new student.
-   * GET students/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
-
-  /**
-   * Create/save a new student.
-   * POST students
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
+  async index({ response, view }) {
+    const students = await Student.all();
+    return response
+      .status(200)
+      .send({ payload: { type: "success", students } });
   }
 
   /**
@@ -52,19 +32,9 @@ class StudentController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing student.
-   * GET students/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
+    const student = await Student.find(params.id);
+    return response.status(200).send({ payload: { type: "success", student } });
   }
 
   /**
@@ -75,7 +45,43 @@ class StudentController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {}
+
+  /**
+   * Delete a student with id.
+   * GET students/:id/get_school
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async getSchool({ params, request, response }) {
+    const student = await Student.find(params.id);
+    return student.school;
+  }
+
+  /**
+   * Delete a student with id.
+   * GET students/:id/get_department
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async getDepartment({ params: id }) {
+    const student = await Student.find(id);
+    return student.dept;
+  }
+
+  /**
+   * GET students/:id/get_by_department
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async getByDepartment({ params, request, response }) {
+    return this.getDepartment({params});
   }
 
   /**
@@ -86,8 +92,7 @@ class StudentController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = StudentController
+module.exports = StudentController;
